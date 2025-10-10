@@ -24,7 +24,8 @@ const mockBlogData = {
       content: {
         heading: "5 Warning Signs of Dental Disease",
         text: "Watch for these common indicators that your pet may need a dental checkup: bad breath, difficulty eating, pawing at the mouth, bleeding gums, and loose or discolored teeth. Early detection is key to preventing more serious issues down the line.",
-        imageUrl: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&q=80",
+        imageUrl:
+          "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&q=80",
         imageAlt: "Veterinarian examining a dog's teeth",
         imagePosition: "right" as const,
       },
@@ -35,7 +36,8 @@ const mockBlogData = {
       content: {
         heading: "Prevention is Better Than Treatment",
         text: "Regular brushing, dental chews, and annual professional cleanings can help prevent dental disease. Start dental care early in your pet's life to establish good habits. If your pet resists brushing, there are many alternative products available, from dental wipes to water additives.",
-        imageUrl: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
+        imageUrl:
+          "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
         imageAlt: "Pet dental care tools and toothbrush",
         imagePosition: "left" as const,
       },
@@ -72,7 +74,8 @@ const mockBlogData = {
       type: "media" as const,
       content: {
         mediaType: "image" as const,
-        imageUrl: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80",
+        imageUrl:
+          "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80",
         imageAlt: "Happy healthy dog smiling",
         caption: "A healthy smile leads to a happy pet",
       },
@@ -87,23 +90,31 @@ const BlogPage = () => {
     <>
       <Helmet>
         <title>{blogData.title} | Veterinary Care Blog</title>
-        <meta name="description" content={blogData.sections[0]?.content?.text?.substring(0, 160)} />
+        <meta
+          name="description"
+          content={blogData.sections[0]?.content?.text?.substring(0, 160)}
+        />
         <meta property="og:title" content={blogData.title} />
-        <meta property="og:description" content={blogData.sections[0]?.content?.text?.substring(0, 160)} />
+        <meta
+          property="og:description"
+          content={blogData.sections[0]?.content?.text?.substring(0, 160)}
+        />
         <meta property="og:type" content="article" />
       </Helmet>
-      
+
       <div className="min-h-screen">
         <Header />
         <main>
-          <article className="py-16 bg-background">
+          <article className="py-28 bg-background">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <header className="max-w-4xl mx-auto mb-12 animate-fade-in">
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6">
                   {blogData.title}
                 </h1>
                 <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
-                  <span className="font-medium text-foreground">{blogData.author}</span>
+                  <span className="font-medium text-foreground">
+                    {blogData.author}
+                  </span>
                   <span>•</span>
                   <time dateTime={blogData.date}>{blogData.date}</time>
                   <span>•</span>
@@ -124,7 +135,10 @@ const BlogPage = () => {
               <div className="max-w-4xl mx-auto mt-16 pt-12 border-t border-border">
                 <p className="text-muted-foreground text-center">
                   Have questions about your pet's dental health?{" "}
-                  <a href="#contact" className="text-primary hover:underline font-medium">
+                  <a
+                    href="#contact"
+                    className="text-primary hover:underline font-medium"
+                  >
                     Contact us today
                   </a>
                 </p>
