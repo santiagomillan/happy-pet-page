@@ -1,23 +1,33 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const blogPosts = [
   {
     title: "5 Signs Your Pet Needs a Dental Cleaning",
-    excerpt: "Learn to recognize the warning signs of dental disease and when to schedule a professional cleaning for your furry friend.",
+    excerpt:
+      "Learn to recognize the warning signs of dental disease and when to schedule a professional cleaning for your furry friend.",
     date: "March 15, 2024",
     category: "Dental Health",
   },
   {
     title: "Spring Allergies in Pets: What to Watch For",
-    excerpt: "Discover common allergy symptoms in dogs and cats and how to help your pet find relief during allergy season.",
+    excerpt:
+      "Discover common allergy symptoms in dogs and cats and how to help your pet find relief during allergy season.",
     date: "March 10, 2024",
     category: "Seasonal Care",
   },
   {
     title: "Nutrition Tips for Senior Pets",
-    excerpt: "As pets age, their nutritional needs change. Find out how to adjust your senior pet's diet for optimal health.",
+    excerpt:
+      "As pets age, their nutritional needs change. Find out how to adjust your senior pet's diet for optimal health.",
     date: "March 5, 2024",
     category: "Nutrition",
   },
@@ -59,14 +69,14 @@ const Blog = () => {
                 <CardDescription className="text-base mb-4">
                   {post.excerpt}
                 </CardDescription>
-                <Button 
-                  variant="link" 
+                <Button
+                  variant="link"
                   className="p-0 h-auto text-primary"
                   asChild
                 >
-                  <a href="/blog/dental-health">
+                  <Link to="/blog/dental-health">
                     Read More <ArrowRight className="ml-2 w-4 h-4" />
-                  </a>
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -75,7 +85,7 @@ const Blog = () => {
 
         <div className="text-center">
           <Button variant="outline" size="lg" className="border-2" asChild>
-            <a href="/blog">View All Articles</a>
+            <Link to="/blog">View All Articles</Link>
           </Button>
         </div>
       </div>
