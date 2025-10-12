@@ -183,49 +183,6 @@ Los archivos optimizados se generan en la carpeta `dist/` listos para desplegar.
 - `pnpm run preview`: sirve la carpeta `dist` tras un build.
 - `pnpm run lint`: analiza el código con ESLint + TypeScript.
 
-## � Deployment
-
-### Plataformas recomendadas
-
-El proyecto está listo para desplegarse en cualquier plataforma que soporte aplicaciones estáticas:
-
-#### Vercel (Recomendado)
-
-```powershell
-# Instalar Vercel CLI
-npm i -g vercel
-
-# Desplegar
-vercel --prod
-```
-
-#### Netlify
-
-1. Conecta tu repositorio en [netlify.com](https://netlify.com)
-2. Configuración build:
-   - **Build command:** `pnpm run build`
-   - **Publish directory:** `dist`
-
-#### GitHub Pages
-
-```powershell
-# Instalar gh-pages
-pnpm add -D gh-pages
-
-# Agregar script en package.json
-"deploy": "gh-pages -d dist"
-
-# Desplegar
-pnpm run build && pnpm run deploy
-```
-
-#### Otras opciones
-
-- **Firebase Hosting**
-- **AWS S3 + CloudFront**
-- **DigitalOcean App Platform**
-- Cualquier servidor web estático
-
 ## 🤝 Contribuir al proyecto
 
 ### Estándares de código
@@ -257,19 +214,10 @@ pnpm run build && pnpm run deploy
 
 ## 💡 Próximas mejoras
 
-- [ ] Integración con CMS headless (Strapi, Contentful)
+- [ ] Integración con CMS headless (Sanity)
 - [ ] Sistema de citas online
 - [ ] Panel de administración
-- [ ] Modo oscuro/claro
-- [ ] Internacionalización (i18n)
-- [ ] PWA (Progressive Web App)
 - [ ] Tests unitarios y e2e
-
-## 📫 Soporte y contacto
-
-- **Issues:** [GitHub Issues](https://github.com/santiagomillan/happy-pet-page/issues)
-- **Discusiones:** [GitHub Discussions](https://github.com/santiagomillan/happy-pet-page/discussions)
-- **Email:** Para consultas específicas de desarrollo
 
 ---
 
