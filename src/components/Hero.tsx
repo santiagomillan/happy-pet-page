@@ -45,32 +45,11 @@ const Hero = () => {
   useEffect(() => {
     const fetchHeroData = async () => {
       try {
-        console.log("🚀 [Hero] Iniciando fetch de datos hero...");
         setIsLoading(true);
         setError(null);
-
-        console.log("🔍 [Hero] Ejecutando query GROQ:");
-        console.log("📝 [Hero] Query:", HERO_QUERY);
-
         const data = await client.fetch<SanityDocument>(HERO_QUERY);
 
-        console.log("✅ [Hero] Datos obtenidos desde Sanity:");
-        console.log("📊 [Hero] Datos completos:", data);
-
-        if (data?.heroSection) {
-          console.log("📄 [Hero] Hero Section encontrada:", {
-            enabled: data.heroSection.enabled,
-            title: data.heroSection.title,
-            subtitle: data.heroSection.subtitle,
-            primaryCta: data.heroSection.primaryCta,
-            secondaryCta: data.heroSection.secondaryCta,
-            backgroundImage: data.heroSection.backgroundImage,
-            stats: data.heroSection.stats,
-          });
-        } else {
-          console.warn("⚠️ [Hero] No se encontró heroSection en los datos");
-        }
-
+        console.log("Datos completos:", data);
         setHeroData(data);
       } catch (err) {
         console.error("❌ [Hero] Error fetching hero data:", err);
@@ -106,31 +85,6 @@ const Hero = () => {
       heroSection?.secondaryCta || { text: "Our Services", link: "#services" },
     [heroSection?.secondaryCta]
   );
-
-  // Log del estado actual
-  useEffect(() => {
-    console.log("🎯 [Hero] Estado actual del componente:", {
-      isLoading,
-      error,
-      heroData: !!heroData,
-      heroSection: !!heroSection,
-      title,
-      subtitle,
-      backgroundImg,
-      primaryCta,
-      secondaryCta,
-    });
-  }, [
-    isLoading,
-    error,
-    heroData,
-    heroSection,
-    title,
-    subtitle,
-    backgroundImg,
-    primaryCta,
-    secondaryCta,
-  ]);
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
