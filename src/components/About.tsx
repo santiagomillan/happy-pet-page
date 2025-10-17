@@ -2,21 +2,71 @@ import { Heart, Award, Clock } from "lucide-react";
 import { useEffect, useState, useMemo } from "react";
 import { client } from "@/sanity/client";
 import { type SanityDocument } from "next-sanity";
+import { PortableText, type PortableTextComponents } from "@portabletext/react";
 
-// Types for minimal Portable Text block parsing
-type PortableTextChild = {
-  _key?: string;
-  _type?: string;
-  text?: string;
-  marks?: string[];
-};
-
-type PortableTextBlock = {
-  _key?: string;
-  _type?: string;
-  children?: PortableTextChild[];
-  style?: string;
-  markDefs?: unknown[];
+// Componentes personalizados para PortableText con estilos Tailwind
+const portableTextComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children }) => (
+      <p className="text-lg text-foreground leading-relaxed mb-6">{children}</p>
+    ),
+    h1: ({ children }) => (
+      <h1 className="text-3xl font-bold text-foreground mb-4">{children}</h1>
+    ),
+    h2: ({ children }) => (
+      <h2 className="text-2xl font-bold text-foreground mb-3">{children}</h2>
+    ),
+    h3: ({ children }) => (
+      <h3 className="text-xl font-semibold text-foreground mb-3">{children}</h3>
+    ),
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4">
+        {children}
+      </blockquote>
+    ),
+  },
+  list: {
+    bullet: ({ children }) => (
+      <ul className="list-disc list-inside mb-6 text-foreground space-y-2">
+        {children}
+      </ul>
+    ),
+    number: ({ children }) => (
+      <ol className="list-decimal list-inside mb-6 text-foreground space-y-2">
+        {children}
+      </ol>
+    ),
+  },
+  listItem: {
+    bullet: ({ children }) => (
+      <li className="text-lg leading-relaxed">{children}</li>
+    ),
+    number: ({ children }) => (
+      <li className="text-lg leading-relaxed">{children}</li>
+    ),
+  },
+  marks: {
+    strong: ({ children }) => (
+      <strong className="font-bold text-foreground">{children}</strong>
+    ),
+    em: ({ children }) => <em className="italic">{children}</em>,
+    underline: ({ children }) => <u className="underline">{children}</u>,
+    code: ({ children }) => (
+      <code className="bg-muted px-2 py-1 rounded text-sm font-mono">
+        {children}
+      </code>
+    ),
+    link: ({ children, value }) => (
+      <a
+        href={value?.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline"
+      >
+        {children}
+      </a>
+    ),
+  },
 };
 
 // Query para About Section
@@ -89,50 +139,6 @@ const About = () => {
     fetchaboutData();
   }, []);
 
-  // Small helper: normalize Portable Text (Sanity) blocks to array of paragraph strings
-  const normalizePortableText = (
-    portable: string | string[] | PortableTextBlock[] | undefined
-  ): string[] | null => {
-    if (!portable) return null;
-
-    // If it's already a string
-    if (typeof portable === "string") return [portable];
-
-    // If it's an array of strings
-    if (
-      Array.isArray(portable) &&
-      portable.every((p) => typeof p === "string")
-    ) {
-      return portable as string[];
-    }
-
-    // If it's Portable Text blocks (array of block objects)
-    if (Array.isArray(portable)) {
-      try {
-        const paragraphs: string[] = (portable as PortableTextBlock[])
-          .filter((blk) => blk && blk._type === "block")
-          .map((blk) => {
-            // children are spans
-            if (!Array.isArray(blk.children)) return "";
-            return blk.children
-              .map((child) => (child && child.text ? child.text : ""))
-              .join("");
-          })
-          .filter((p) => p && p.trim().length > 0);
-
-        return paragraphs.length > 0 ? paragraphs : null;
-      } catch (e) {
-        console.warn(
-          "[About] normalizePortableText fallback: error parsing portable text",
-          e
-        );
-        return null;
-      }
-    }
-
-    return null;
-  };
-
   // Datos dinámicos desde Sanity o fallback estático (memoizados para evitar re-renders)
   const title = useMemo(
     () => aboutData?.title || "Meet Dr. Sarah Mitchell",
@@ -144,23 +150,17 @@ const About = () => {
     [aboutData?.subtitle]
   );
 
-  // Normalize description: can be Portable Text (blocks), array of strings, or string
+  // Description from Sanity (Portable Text) - ya viene como array de bloques
   const description = useMemo(() => {
-    const portable = aboutData?.description as unknown as
-      | string
-      | string[]
-      | PortableTextBlock[]
-      | undefined;
-    const normalized = normalizePortableText(portable);
-    if (normalized) return normalized;
+    return aboutData?.description || null;
+  }, [aboutData?.description]);
 
-    // fallback static paragraphs
-    return [
-      "With over 15 years of experience in veterinary medicine, Dr. Sarah Mitchell has dedicated her career to providing exceptional care for animals of all kinds. Her passion for animal welfare began in childhood and has only grown stronger through years of practice.",
-      "Dr. Mitchell believes in treating every pet as if they were her own, combining advanced medical expertise with genuine compassion. She specializes in preventive care, emergency medicine, and building lasting relationships with both pets and their families.",
-      "When she's not caring for patients, Dr. Mitchell enjoys hiking with her two rescue dogs and volunteering at local animal shelters.",
-    ];
-  }, [aboutData]);
+  // Fallback content cuando no hay description desde Sanity
+  const fallbackDescription = [
+    "With over 15 years of experience in veterinary medicine, Dr. Sarah Mitchell has dedicated her career to providing exceptional care for animals of all kinds. Her passion for animal welfare began in childhood and has only grown stronger through years of practice.",
+    "Dr. Mitchell believes in treating every pet as if they were her own, combining advanced medical expertise with genuine compassion. She specializes in preventive care, emergency medicine, and building lasting relationships with both pets and their families.",
+    "When she's not caring for patients, Dr. Mitchell enjoys hiking with her two rescue dogs and volunteering at local animal shelters.",
+  ];
 
   const card1 = useMemo(
     () =>
@@ -200,9 +200,10 @@ const About = () => {
       aboutData: !!aboutData,
       title,
       subtitle,
-      description: Array.isArray(description)
-        ? description.length + " párrafos"
-        : description,
+      hasDescription: !!description,
+      descriptionType: Array.isArray(description)
+        ? "Portable Text array"
+        : typeof description,
       card1,
       card2,
       card3,
@@ -230,15 +231,25 @@ const About = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6 animate-slide-up">
-            {description.map((paragraph, index) => (
-              <p
-                key={index}
-                className="text-lg text-foreground leading-relaxed"
-              >
-                {paragraph}
-              </p>
-            ))}
+          <div className="animate-slide-up">
+            {description ? (
+              <PortableText
+                value={description}
+                components={portableTextComponents}
+              />
+            ) : (
+              // Fallback content
+              <div className="space-y-6">
+                {fallbackDescription.map((paragraph, index) => (
+                  <p
+                    key={index}
+                    className="text-lg text-foreground leading-relaxed"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="grid gap-6">
