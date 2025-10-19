@@ -1,17 +1,55 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { client } from "@/sanity/client";
+import { type SanityDocument } from "next-sanity";
+
+const CONTACT_QUERY = `*[_type == "siteSettings"][0].contactSection{
+  enabled,
+  title,
+  subtitle,
+  contactInfo{
+    address,
+    phone,
+    email,
+    schedule[]{
+      days,
+      hours
+    }
+  }
+}`;
 
 const Contact = () => {
   const { toast } = useToast();
+  const [contactData, setContactData] = useState<SanityDocument | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
+
+  // Fetch contact data from Sanity
+  useEffect(() => {
+    const fetchContactData = async () => {
+      try {
+        const data = await client.fetch<SanityDocument>(CONTACT_QUERY);
+        setContactData(data);
+      } catch (err) {
+        console.error("Error fetching contact data:", err);
+      }
+    };
+
+    fetchContactData();
+  }, []);
+
+  const title = contactData?.title || "Get In Touch";
+  const subtitle =
+    contactData?.subtitle ||
+    "We're here to answer your questions and schedule appointments";
+  const contactInfo = contactData?.contactInfo;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +60,9 @@ const Contact = () => {
     setFormData({ name: "", email: "", message: "" });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
@@ -34,61 +74,79 @@ const Contact = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-16 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Get In Touch
+            {title}
           </h2>
-          <p className="text-lg text-muted-foreground">
-            We're here to answer your questions and schedule appointments
-          </p>
+          <p className="text-lg text-muted-foreground">{subtitle}</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
           <div className="space-y-8 animate-slide-up">
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <MapPin className="w-6 h-6 text-primary" />
+            {/* Address */}
+            {contactInfo?.address && (
+              <div className="flex gap-4">
+                <div className="flex-shrink-0">
+                  <MapPin className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">
+                    Address
+                  </h3>
+                  <p className="text-muted-foreground whitespace-pre-line">
+                    {contactInfo.address}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-1">Address</h3>
-                <p className="text-muted-foreground">
-                  123 Veterinary Lane<br />
-                  Pet City, PC 12345
-                </p>
-              </div>
-            </div>
+            )}
 
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <Phone className="w-6 h-6 text-primary" />
+            {/* Phone */}
+            {contactInfo?.phone && (
+              <div className="flex gap-4">
+                <div className="flex-shrink-0">
+                  <Phone className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Phone</h3>
+                  <p className="text-muted-foreground">{contactInfo.phone}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-1">Phone</h3>
-                <p className="text-muted-foreground">(555) 123-4567</p>
-              </div>
-            </div>
+            )}
 
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <Mail className="w-6 h-6 text-primary" />
+            {/* Email */}
+            {contactInfo?.email && (
+              <div className="flex gap-4">
+                <div className="flex-shrink-0">
+                  <Mail className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                  <p className="text-muted-foreground">{contactInfo.email}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                <p className="text-muted-foreground">info@pawsandcare.com</p>
-              </div>
-            </div>
+            )}
 
-            <div className="flex gap-4">
-              <div className="flex-shrink-0">
-                <Clock className="w-6 h-6 text-primary" />
+            {/* Schedule */}
+            {contactInfo?.schedule && contactInfo.schedule.length > 0 && (
+              <div className="flex gap-4">
+                <div className="flex-shrink-0">
+                  <Clock className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-foreground mb-1">Hours</h3>
+                  <div className="text-muted-foreground space-y-1">
+                    {contactInfo.schedule.map(
+                      (
+                        item: { days: string; hours: string },
+                        index: number
+                      ) => (
+                        <p key={index}>
+                          {item.days}: {item.hours}
+                        </p>
+                      )
+                    )}
+                  </div>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-foreground mb-1">Hours</h3>
-                <p className="text-muted-foreground">
-                  Monday - Friday: 8:00 AM - 6:00 PM<br />
-                  Saturday: 9:00 AM - 4:00 PM<br />
-                  Sunday: Emergency Only
-                </p>
-              </div>
-            </div>
+            )}
 
             <div className="rounded-lg overflow-hidden shadow-card border border-border h-64">
               <iframe
@@ -106,7 +164,10 @@ const Contact = () => {
 
           <form onSubmit={handleSubmit} className="space-y-6 animate-scale-in">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Name
               </label>
               <Input
@@ -121,7 +182,10 @@ const Contact = () => {
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Email
               </label>
               <Input
@@ -137,7 +201,10 @@ const Contact = () => {
             </div>
 
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+              <label
+                htmlFor="message"
+                className="block text-sm font-medium text-foreground mb-2"
+              >
                 Message
               </label>
               <Textarea
