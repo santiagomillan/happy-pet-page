@@ -54,8 +54,8 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
-      title: "Message Sent!",
-      description: "We'll get back to you as soon as possible.",
+      title: "Mensaje Enviado!",
+      description: "Nos pondremos en contacto lo antes posible.",
     });
     setFormData({ name: "", email: "", message: "" });
   };
@@ -89,7 +89,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-foreground mb-1">
-                    Address
+                    Direccion
                   </h3>
                   <p className="text-muted-foreground whitespace-pre-line">
                     {contactInfo.address}
@@ -105,7 +105,9 @@ const Contact = () => {
                   <Phone className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Phone</h3>
+                  <h3 className="font-semibold text-foreground mb-1">
+                    Telefono
+                  </h3>
                   <p className="text-muted-foreground">{contactInfo.phone}</p>
                 </div>
               </div>
@@ -131,7 +133,9 @@ const Contact = () => {
                   <Clock className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground mb-1">Hours</h3>
+                  <h3 className="font-semibold text-foreground mb-1">
+                    Horarios
+                  </h3>
                   <div className="text-muted-foreground space-y-1">
                     {contactInfo.schedule.map(
                       (
@@ -150,7 +154,8 @@ const Contact = () => {
 
             <div className="rounded-lg overflow-hidden shadow-card border border-border h-64">
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2412648750455!2d-73.98823492346592!3d40.74844097138558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1710432000000!5m2!1sen!2sus"
+                // src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.2412648750455!2d-73.98823492346592!3d40.74844097138558!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1710432000000!5m2!1sen!2sus"
+                src="https://maps.google.com/maps?q=Cl.+19a+%2314-79,+Chiquinquir%C3%A1,+Boyac%C3%A1&z=15&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
@@ -168,7 +173,7 @@ const Contact = () => {
                 htmlFor="name"
                 className="block text-sm font-medium text-foreground mb-2"
               >
-                Name
+                Nombre
               </label>
               <Input
                 id="name"
@@ -177,7 +182,7 @@ const Contact = () => {
                 onChange={handleChange}
                 required
                 className="w-full"
-                placeholder="Your name"
+                placeholder="Tu nombre"
               />
             </div>
 
@@ -205,7 +210,7 @@ const Contact = () => {
                 htmlFor="message"
                 className="block text-sm font-medium text-foreground mb-2"
               >
-                Message
+                Mensaje
               </label>
               <Textarea
                 id="message"
@@ -214,7 +219,7 @@ const Contact = () => {
                 onChange={handleChange}
                 required
                 className="w-full min-h-[150px]"
-                placeholder="Tell us how we can help your pet..."
+                placeholder="Cuéntanos cómo podemos ayudar a tu mascota..."
               />
             </div>
 
@@ -223,7 +228,7 @@ const Contact = () => {
               size="lg"
               className="w-full bg-gradient-hero text-primary-foreground hover:opacity-90"
             >
-              Send Message
+              Enviar Mensaje
             </Button>
           </form>
         </div>
