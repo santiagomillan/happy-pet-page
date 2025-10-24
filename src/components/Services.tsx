@@ -174,10 +174,7 @@ const Services = ({ data: servicesData }: ServicesProps) => {
 
   // Procesar servicios desde Sanity o usar fallback
   const services = useMemo(() => {
-    if (
-      servicesData?.services &&
-      Array.isArray(servicesData.services)
-    ) {
+    if (servicesData?.services && Array.isArray(servicesData.services)) {
       return servicesData.services.map(
         (service: SanityService, index: number) => {
           const description = portableTextToString(service.description);

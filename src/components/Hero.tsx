@@ -33,8 +33,7 @@ interface HeroProps {
 
 const Hero = ({ data: heroData }: HeroProps) => {
   // Datos dinámicos desde Sanity o fallback estático (memoizados para evitar re-renders)
-  const title =
-    heroData?.title || "Compassionate Care for Your Beloved Pets";
+  const title = heroData?.title || "Compassionate Care for Your Beloved Pets";
   const subtitle =
     heroData?.subtitle ||
     "Expert veterinary services with a gentle touch. Your pet's health and happiness are our top priority.";
@@ -50,8 +49,7 @@ const Hero = ({ data: heroData }: HeroProps) => {
   );
 
   const secondaryCta = useMemo(
-    () =>
-      heroData?.secondaryCta || { text: "Our Services", link: "#services" },
+    () => heroData?.secondaryCta || { text: "Our Services", link: "#services" },
     [heroData?.secondaryCta]
   );
 

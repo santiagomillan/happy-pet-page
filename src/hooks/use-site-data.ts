@@ -207,16 +207,17 @@ export function useSiteData(): UseSiteDataReturn {
 
     try {
       console.log("🚀 [useSiteData] Attempting single query fetch...");
-      
+
       // Estrategia 1: Intentar query única (más rápido)
       const result = await client.fetch<SiteData>(SITE_QUERY);
-      
+
       console.log("✅ [useSiteData] Single query successful:", result);
       setData(result);
-      
     } catch (mainError) {
       console.error("❌ [useSiteData] Main query failed:", mainError);
-      console.log("🔄 [useSiteData] Falling back to individual section queries...");
+      console.log(
+        "🔄 [useSiteData] Falling back to individual section queries..."
+      );
 
       // Estrategia 2: Fallback a queries individuales por sección
       const sectionData: Record<string, SectionData> = {};
@@ -240,7 +241,7 @@ export function useSiteData(): UseSiteDataReturn {
       results.forEach((result) => {
         if (result.status === "fulfilled" && result.value?.data) {
           const { key, data: sectionResult } = result.value;
-          
+
           // Manejar casos especiales para servicesSection y blogSection
           if (key === "servicesSection" && sectionResult.servicesSection) {
             sectionData[key] = sectionResult.servicesSection;
@@ -257,7 +258,10 @@ export function useSiteData(): UseSiteDataReturn {
       setErrors(sectionErrors);
 
       if (Object.keys(sectionErrors).length > 0) {
-        console.warn("⚠️ [useSiteData] Some sections failed to load:", sectionErrors);
+        console.warn(
+          "⚠️ [useSiteData] Some sections failed to load:",
+          sectionErrors
+        );
       }
     } finally {
       setIsLoading(false);
