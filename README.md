@@ -216,6 +216,7 @@ Los archivos optimizados se generan en la carpeta `dist/` listos para desplegar.
 
 - [ ] Integración con CMS headless (Sanity)
 - [ ] Manejo errores de la info. crear info quemada en caso de error con el cms
+- [ ] query única, Si falla, fetch individual por sección, Error Boundaries, Fallback data
 - [ ] Sistema de citas online
 - [ ] Panel de administración
 - [ ] Tests unitarios y e2e

@@ -1,49 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-import { client } from "@/sanity/client";
-import { type SanityDocument } from "next-sanity";
 
-const CONTACT_QUERY = `*[_type == "siteSettings"][0].contactSection{
-  enabled,
-  title,
-  subtitle,
-  contactInfo{
-    address,
-    phone,
-    email,
-    schedule[]{
-      days,
-      hours
-    }
-  }
-}`;
+interface ContactProps {
+  data?: {
+    enabled?: boolean;
+    title?: string;
+    subtitle?: string;
+    contactInfo?: {
+      address?: string;
+      phone?: string;
+      email?: string;
+      schedule?: Array<{
+        days?: string;
+        hours?: string;
+      }>;
+    };
+  };
+}
 
-const Contact = () => {
+const Contact = ({ data: contactData }: ContactProps) => {
   const { toast } = useToast();
-  const [contactData, setContactData] = useState<SanityDocument | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   });
-
-  // Fetch contact data from Sanity
-  useEffect(() => {
-    const fetchContactData = async () => {
-      try {
-        const data = await client.fetch<SanityDocument>(CONTACT_QUERY);
-        setContactData(data);
-      } catch (err) {
-        console.error("Error fetching contact data:", err);
-      }
-    };
-
-    fetchContactData();
-  }, []);
 
   const title = contactData?.title || "Get In Touch";
   const subtitle =

@@ -23,9 +23,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useEffect, useState, useMemo } from "react";
-import { client } from "@/sanity/client";
-import { type SanityDocument } from "next-sanity";
+import { useMemo } from "react";
 
 // Tipo para un servicio desde Sanity
 type SanityService = {
@@ -34,6 +32,15 @@ type SanityService = {
   description?: string | unknown[];
   icon?: string | { title?: string; value?: string };
 };
+
+interface ServicesProps {
+  data?: {
+    enabled?: boolean;
+    title?: string;
+    subtitle?: string;
+    services?: SanityService[];
+  };
+}
 
 // Helper: convertir Portable Text a string simple
 const portableTextToString = (
@@ -61,26 +68,6 @@ const portableTextToString = (
 
   return "";
 };
-
-// Query para Services Section
-const SERVICES_QUERY = `*[_type == "siteSettings"][0]{
-  servicesSection{
-    enabled,
-    title,
-    subtitle,
-    services[]->{
-      _id,
-      name,
-      "slug": slug.current,
-      description,
-      icon,
-      iconImage{alt, asset->{_id, url}},
-      price,
-      duration,
-      features
-    }
-  }
-}`;
 
 // Mapeo dinámico de iconos desde string a componente Lucide (case-insensitive)
 const iconMap: Record<string, LucideIcon> = {
@@ -171,43 +158,27 @@ const fallbackServices = [
   },
 ];
 
-const Services = () => {
-  const [servicesData, setServicesData] = useState<SanityDocument | null>(null);
-
-  // Fetch services data
-  useEffect(() => {
-    const fetchServicesData = async () => {
-      try {
-        const data = await client.fetch<SanityDocument>(SERVICES_QUERY);
-        setServicesData(data);
-      } catch (err) {
-        console.error("Error fetching services:", err);
-      }
-    };
-
-    fetchServicesData();
-  }, []);
-
+const Services = ({ data: servicesData }: ServicesProps) => {
   // Datos dinámicos desde Sanity o fallback estático
   const title = useMemo(
-    () => servicesData?.servicesSection?.title || "Our Veterinary Services",
-    [servicesData?.servicesSection?.title]
+    () => servicesData?.title || "Our Veterinary Services",
+    [servicesData?.title]
   );
 
   const subtitle = useMemo(
     () =>
-      servicesData?.servicesSection?.subtitle ||
+      servicesData?.subtitle ||
       "Comprehensive care for every stage of your pet's life",
-    [servicesData?.servicesSection?.subtitle]
+    [servicesData?.subtitle]
   );
 
   // Procesar servicios desde Sanity o usar fallback
   const services = useMemo(() => {
     if (
-      servicesData?.servicesSection?.services &&
-      Array.isArray(servicesData.servicesSection.services)
+      servicesData?.services &&
+      Array.isArray(servicesData.services)
     ) {
-      return servicesData.servicesSection.services.map(
+      return servicesData.services.map(
         (service: SanityService, index: number) => {
           const description = portableTextToString(service.description);
           const IconComponent = getIconComponent(service.icon);

@@ -1,8 +1,33 @@
 import { Heart, Award, Clock } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
-import { client } from "@/sanity/client";
-import { type SanityDocument } from "next-sanity";
+import { useMemo } from "react";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PortableTextValue = any;
+
+interface AboutProps {
+  data?: {
+    enabled?: boolean;
+    title?: string;
+    subtitle?: string;
+    description?: PortableTextValue;
+    card1?: {
+      icon?: string;
+      title?: string;
+      description?: string;
+    };
+    card2?: {
+      icon?: string;
+      title?: string;
+      description?: string;
+    };
+    card3?: {
+      icon?: string;
+      title?: string;
+      description?: string;
+    };
+  };
+}
 
 // Componentes personalizados para PortableText con estilos Tailwind
 const portableTextComponents: PortableTextComponents = {
@@ -69,76 +94,7 @@ const portableTextComponents: PortableTextComponents = {
   },
 };
 
-// Query para About Section
-const ABOUT_QUERY = `*[_type == "siteSettings"][0].aboutSection{
-  enabled,
-  title,
-  subtitle,
-  description,
-  card1{
-    icon,
-    title,
-    description
-  },
-  card2{
-    icon,
-    title,
-    description
-  },
-  card3{
-    icon,
-    title,
-    description
-  },
-}`;
-
-const About = () => {
-  const [aboutData, setAboutData] = useState<SanityDocument | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch about data
-  useEffect(() => {
-    const fetchaboutData = async () => {
-      try {
-        console.log("🚀 [About] Iniciando fetch de datos about...");
-        setIsLoading(true);
-        setError(null);
-
-        console.log("🔍 [About] Ejecutando query GROQ:");
-        console.log("📝 [About] Query:", ABOUT_QUERY);
-
-        const data = await client.fetch<SanityDocument>(ABOUT_QUERY);
-
-        console.log("✅ [About] Datos obtenidos desde Sanity:");
-        console.log("📊 [About] Datos completos:", data);
-
-        if (data) {
-          console.log("📄 [About] About Section encontrada:", {
-            enabled: data.enabled,
-            title: data.title,
-            subtitle: data.subtitle,
-            description: data.description,
-            card1: data.card1,
-            card2: data.card2,
-            card3: data.card3,
-          });
-        } else {
-          console.warn("⚠️ [About] No se encontraron datos de aboutSection");
-        }
-
-        setAboutData(data);
-      } catch (err) {
-        console.error("❌ [About] Error fetching about data:", err);
-        setError(err instanceof Error ? err.message : "Error desconocido");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchaboutData();
-  }, []);
-
+const About = ({ data: aboutData }: AboutProps) => {
   // Datos dinámicos desde Sanity o fallback estático (memoizados para evitar re-renders)
   const title = useMemo(
     () => aboutData?.title || "Meet Dr. Sarah Mitchell",
@@ -191,34 +147,6 @@ const About = () => {
       },
     [aboutData?.card3]
   );
-
-  // Log del estado actual
-  useEffect(() => {
-    console.log("🎯 [About] Estado actual del componente:", {
-      isLoading,
-      error,
-      aboutData: !!aboutData,
-      title,
-      subtitle,
-      hasDescription: !!description,
-      descriptionType: Array.isArray(description)
-        ? "Portable Text array"
-        : typeof description,
-      card1,
-      card2,
-      card3,
-    });
-  }, [
-    isLoading,
-    error,
-    aboutData,
-    title,
-    subtitle,
-    description,
-    card1,
-    card2,
-    card3,
-  ]);
 
   return (
     <section id="about" className="py-20 bg-muted/30">

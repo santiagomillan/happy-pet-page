@@ -1,89 +1,58 @@
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import heroImage from "@/assets/hero-vet.jpg";
-import { client } from "@/sanity/client";
-import { type SanityDocument } from "next-sanity";
 
-// Query completa desde siteSettings
-const HERO_QUERY = `*[_type == "siteSettings"][0]{
-  heroSection{
-    enabled,
-    title,
-    subtitle,
-    primaryCta{
-      text,
-      link,
-      external
-    },
-    secondaryCta{
-      text,
-      link,
-      external
-    },
-    backgroundImage{
-      alt,
-      asset->{
-        _id,
-        url
-      },
-      hotspot
-    },
-    stats[]{
-      label,
-      value,
-      suffix
-    }
-  }
-}`;
-
-const Hero = () => {
-  const [heroData, setHeroData] = useState<SanityDocument | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch hero data
-  useEffect(() => {
-    const fetchHeroData = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const data = await client.fetch<SanityDocument>(HERO_QUERY);
-
-        console.log("Datos completos:", data);
-        setHeroData(data);
-      } catch (err) {
-        console.error("❌ [Hero] Error fetching hero data:", err);
-        setError(err instanceof Error ? err.message : "Error desconocido");
-      } finally {
-        setIsLoading(false);
-      }
+interface HeroProps {
+  data?: {
+    enabled?: boolean;
+    title?: string;
+    subtitle?: string;
+    primaryCta?: {
+      text?: string;
+      link?: string;
+      external?: boolean;
     };
+    secondaryCta?: {
+      text?: string;
+      link?: string;
+      external?: boolean;
+    };
+    backgroundImage?: {
+      alt?: string;
+      asset?: {
+        url?: string;
+      };
+    };
+    stats?: Array<{
+      label?: string;
+      value?: string;
+      suffix?: string;
+    }>;
+  };
+}
 
-    fetchHeroData();
-  }, []);
-
+const Hero = ({ data: heroData }: HeroProps) => {
   // Datos dinámicos desde Sanity o fallback estático (memoizados para evitar re-renders)
-  const heroSection = heroData?.heroSection;
   const title =
-    heroSection?.title || "Compassionate Care for Your Beloved Pets";
+    heroData?.title || "Compassionate Care for Your Beloved Pets";
   const subtitle =
-    heroSection?.subtitle ||
+    heroData?.subtitle ||
     "Expert veterinary services with a gentle touch. Your pet's health and happiness are our top priority.";
-  const backgroundImg = heroSection?.backgroundImage?.asset?.url || heroImage;
+  const backgroundImg = heroData?.backgroundImage?.asset?.url || heroImage;
 
   const primaryCta = useMemo(
     () =>
-      heroSection?.primaryCta || {
+      heroData?.primaryCta || {
         text: "Schedule Appointment",
         link: "#contact",
       },
-    [heroSection?.primaryCta]
+    [heroData?.primaryCta]
   );
 
   const secondaryCta = useMemo(
     () =>
-      heroSection?.secondaryCta || { text: "Our Services", link: "#services" },
-    [heroSection?.secondaryCta]
+      heroData?.secondaryCta || { text: "Our Services", link: "#services" },
+    [heroData?.secondaryCta]
   );
 
   return (
@@ -105,9 +74,9 @@ const Hero = () => {
           </p>
 
           {/* Stats si están disponibles */}
-          {heroSection?.stats && heroSection.stats.length > 0 && (
+          {heroData?.stats && heroData.stats.length > 0 && (
             <div className="flex flex-wrap gap-6 mb-8">
-              {heroSection.stats.map(
+              {heroData.stats.map(
                 (
                   stat: { label: string; value: string; suffix?: string },
                   index: number

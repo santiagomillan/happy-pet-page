@@ -1,4 +1,3 @@
-import { useState, useEffect, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -9,84 +8,51 @@ import {
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, User } from "lucide-react";
 import { Link } from "react-router-dom";
-import { type SanityDocument } from "next-sanity";
-import { client } from "@/sanity/client";
 
-// Query para obtener posts del blog desde Sanity
-const POSTS_QUERY = `*[_type == "siteSettings"][0]{
-  blogSection{
-    enabled,
-    title,
-    subtitle,
-    viewAllButton,
-    blogPageLink
-  },
-  "posts": *[_type == "post" && defined(publishedAt) && publishedAt <= now()] | order(publishedAt desc)[0..2]{
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    publishedAt,
-    featuredImage{alt, asset->{_id, url}},
-    author->{
-      name,
-      image{alt, asset->{_id, url}}
-    },
-    "bodyPreview": pt::text(body)[0...150] + "...",
-    tags[]->{ title }
-  }
-}`;
-
-const Blog = () => {
-  const [blogData, setBlogData] = useState<SanityDocument | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  // Intersection Observer para lazy loading
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isVisible) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1, rootMargin: "50px 0px" }
-    );
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [isVisible]);
-
-  // Fetch data cuando la sección es visible
-  useEffect(() => {
-    if (!isVisible) return;
-
-    const fetchBlogData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await client.fetch<SanityDocument>(POSTS_QUERY);
-        setBlogData(data);
-      } catch (err) {
-        console.error("Error fetching blog data:", err);
-      } finally {
-        setIsLoading(false);
-      }
+interface BlogProps {
+  data?: {
+    enabled?: boolean;
+    title?: string;
+    subtitle?: string;
+    viewAllButton?: string;
+    blogPageLink?: string;
+  };
+  posts?: Array<{
+    _id: string;
+    title?: string;
+    slug?: string;
+    excerpt?: string;
+    publishedAt?: string;
+    featuredImage?: {
+      alt?: string;
+      asset?: {
+        _id?: string;
+        url?: string;
+      };
     };
+    author?: {
+      name?: string;
+      image?: {
+        alt?: string;
+        asset?: {
+          _id?: string;
+          url?: string;
+        };
+      };
+    };
+    bodyPreview?: string;
+    tags?: Array<{ title?: string }>;
+  }>;
+}
 
-    fetchBlogData();
-  }, [isVisible]);
-
-  const posts = blogData?.posts || [];
-  const title = blogData?.blogSection?.title || "Pet Health Blog";
+const Blog = ({ data: blogData, posts = [] }: BlogProps) => {
+  const title = blogData?.title || "Pet Health Blog";
   const subtitle =
-    blogData?.blogSection?.subtitle ||
+    blogData?.subtitle ||
     "Expert advice and tips for keeping your pets happy and healthy";
+  
   return (
-    <section id="blog" className="py-20 bg-muted/30" ref={sectionRef}>
+    <section id="blog" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-16 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
@@ -96,21 +62,7 @@ const Blog = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {isLoading ? (
-            // Skeleton loading
-            [...Array(3)].map((_, index) => (
-              <Card key={index} className="border-border animate-pulse">
-                <CardHeader>
-                  <div className="h-4 bg-muted rounded mb-2"></div>
-                  <div className="h-6 bg-muted rounded w-3/4"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-4 bg-muted rounded mb-2"></div>
-                  <div className="h-4 bg-muted rounded w-1/2"></div>
-                </CardContent>
-              </Card>
-            ))
-          ) : posts.length > 0 ? (
+          {posts.length > 0 ? (
             posts.map((post, index: number) => (
               <Card
                 key={post._id}
@@ -223,8 +175,8 @@ const Blog = () => {
         {posts.length > 3 && (
           <div className="text-center">
             <Button variant="outline" size="lg" className="border-2" asChild>
-              <Link to={blogData?.blogSection?.blogPageLink || "/blog"}>
-                {blogData?.blogSection?.viewAllButton || "View All Articles"}
+              <Link to={blogData?.blogPageLink || "/blog"}>
+                {blogData?.viewAllButton || "View All Articles"}
               </Link>
             </Button>
           </div>

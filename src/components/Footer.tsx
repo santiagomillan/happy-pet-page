@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Facebook,
   Instagram,
@@ -7,70 +6,33 @@ import {
   Youtube,
   Mail,
 } from "lucide-react";
-import { client } from "@/sanity/client";
-import { type SanityDocument } from "next-sanity";
 import logo from "@/assets/logo.png";
 
-const FOOTER_QUERY = `*[_type == "siteSettings"][0].footerSection{
-  businessInfo{
-    logo{alt, asset->{_id, url}},
-    name,
-    description
-  },
-  contactInfo{
-    address,
-    phone,
-    email
-  },
-  socialLinks{
-    facebook,
-    instagram,
-    twitter,
-    linkedin,
-    youtube,
-    tiktok
-  },
-  copyright
-}`;
-
-interface FooterData extends SanityDocument {
-  businessInfo?: {
-    logo?: { alt?: string; asset?: { url?: string } };
-    name?: string;
-    description?: string;
+interface FooterProps {
+  data?: {
+    businessInfo?: {
+      logo?: { alt?: string; asset?: { url?: string } };
+      name?: string;
+      description?: string;
+    };
+    contactInfo?: {
+      address?: string;
+      phone?: string;
+      email?: string;
+    };
+    socialLinks?: {
+      facebook?: string;
+      instagram?: string;
+      twitter?: string;
+      linkedin?: string;
+      youtube?: string;
+      tiktok?: string;
+    };
+    copyright?: string;
   };
-  contactInfo?: {
-    address?: string;
-    phone?: string;
-    email?: string;
-  };
-  socialLinks?: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-    linkedin?: string;
-    youtube?: string;
-    tiktok?: string;
-  };
-  copyright?: string;
 }
 
-const Footer = () => {
-  const [footerData, setFooterData] = useState<FooterData | null>(null);
-
-  useEffect(() => {
-    const fetchFooter = async () => {
-      try {
-        const data = await client.fetch<FooterData>(FOOTER_QUERY);
-        setFooterData(data);
-      } catch (err) {
-        console.error("❌ [Footer] Error fetching data:", err);
-      }
-    };
-
-    fetchFooter();
-  }, []);
-
+const Footer = ({ data: footerData }: FooterProps) => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
