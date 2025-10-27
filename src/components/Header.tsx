@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 import { Link, useLocation } from "react-router-dom";
 
-const Header = () => {
+const Header = ({ data: HeaderData }) => {
+  const title = useMemo(
+    () => HeaderData || "Veterinaria Danna B",
+    [HeaderData]
+  );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -44,7 +48,7 @@ const Header = () => {
               className="h-12 w-12"
             />
             <span className="text-xl font-bold text-foreground hover:text-primary transition-colors">
-              Veterinaria Danna B
+              {title}
             </span>
           </Link>
 

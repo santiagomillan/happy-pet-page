@@ -4,20 +4,43 @@ import { type SanityDocument } from "next-sanity";
 
 // Query única para todos los datos del sitio
 const SITE_QUERY = `*[_type == "siteSettings"][0]{
+  title,
   heroSection{
     enabled,
     title,
     subtitle,
     backgroundImage{alt, asset->{_id, url}},
-    ctas[]{text, link, variant}
+    primaryCta{
+      text,
+      link,
+      external
+    },
+    secondaryCta{
+      text,
+      link,
+      external
+    },
   },
   aboutSection{
     enabled,
     title,
     subtitle,
     description,
-    image{alt, asset->{_id, url}},
-    stats[]{label, value}
+    card1{
+    icon,
+    title,
+    description
+  },
+  card2{
+    icon,
+    title,
+    description
+  },
+  card3{
+    icon,
+    title,
+    description
+  },
   },
   servicesSection{
     enabled,

@@ -18,7 +18,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <Header data={data?.title} />
       <main>
         {/* Hero Section */}
         {data?.heroSection?.enabled !== false && (
