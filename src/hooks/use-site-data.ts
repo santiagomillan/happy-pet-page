@@ -75,6 +75,13 @@ const SITE_QUERY = `*[_type == "siteSettings"][0]{
     "bodyPreview": pt::text(body)[0...150] + "...",
     tags[]->{ title }
   },
+    agendaSection{
+    enabled,
+    title,
+    subtitle,
+    agendaLink,
+    height
+  },
   contactSection{
     enabled,
     title,
@@ -164,6 +171,13 @@ const SECTION_QUERIES = {
       tags[]->{ title }
     }
   }`,
+  agendaSection: `*[_type == "siteSettings"][0].agendaSection{
+    enabled,
+    title,
+    subtitle,
+    agendaLink,
+    height
+  }`,
   contactSection: `*[_type == "siteSettings"][0].contactSection{
     enabled,
     title,
@@ -208,6 +222,7 @@ interface SiteData extends SanityDocument {
   servicesSection?: SectionData;
   blogSection?: SectionData;
   posts?: SectionData[];
+  agendaSection?: SectionData;
   contactSection?: SectionData;
   footerSection?: SectionData;
 }

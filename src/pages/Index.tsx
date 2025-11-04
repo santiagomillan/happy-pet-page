@@ -41,6 +41,33 @@ const Index = () => {
           </ErrorBoundary>
         )}
 
+        {/* Google Calendar - Opcional desde Sanity */}
+        {data?.agendaSection?.enabled && (
+          <ErrorBoundary sectionName="Calendar">
+            <section className="py-16 bg-background">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 className="text-3xl font-bold text-center mb-8">
+                  {data?.agendaSection?.title || "Agenda tu Cita"}
+                </h2>
+                <div className="max-w-5xl mx-auto">
+                  <iframe
+                    src={
+                      data?.agendaSection?.agendaLink ||
+                      "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0PDh9sjuV2dCuW2JLJOFm6I0ctN2yQXJofHZGsvRZUtrONfQhp9yxoZFTstiVIadteRlKhhuSf?gv=true"
+                    }
+                    style={{ border: 0 }}
+                    width="100%"
+                    height={data?.agendaSection?.height || 600}
+                    frameBorder="0"
+                    title="Google Calendar Appointment Scheduling"
+                    loading="lazy"
+                  />
+                </div>
+              </div>
+            </section>
+          </ErrorBoundary>
+        )}
+
         {/* Blog Section */}
         {data?.blogSection?.enabled !== false && (
           <ErrorBoundary sectionName="Blog">
