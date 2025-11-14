@@ -52,7 +52,7 @@ const Blog = ({ data: blogData, posts = [] }: BlogProps) => {
     "Expert advice and tips for keeping your pets happy and healthy";
 
   return (
-    <section id="blog" className="py-16 bg-muted/30">
+    <section id="blog" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-16 animate-fade-in">
           <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">

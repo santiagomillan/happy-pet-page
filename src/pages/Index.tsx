@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useSiteData } from "@/hooks/use-site-data";
+import BookAppointment from "@/components/BookAppointment";
 
 const Index = () => {
   const { data, errors, isLoading } = useSiteData();
@@ -18,7 +19,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <Header data={data?.title} />
+      <Header title={data?.title} menuItems={data?.menuItems} />
       <main>
         {/* Hero Section */}
         {data?.heroSection?.enabled !== false && (
@@ -42,9 +43,10 @@ const Index = () => {
         )}
 
         {/* Google Calendar - Opcional desde Sanity */}
-        {data?.agendaSection?.enabled && (
+        <BookAppointment />
+        {/* {data?.agendaSection?.enabled && (
           <ErrorBoundary sectionName="Calendar">
-            <section className="py-16 bg-background">
+            <section id="agenda" className="py-20 bg-background">
               <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 className="text-3xl font-bold text-center mb-8">
                   {data?.agendaSection?.title || "Agenda tu Cita"}
@@ -66,7 +68,7 @@ const Index = () => {
               </div>
             </section>
           </ErrorBoundary>
-        )}
+        )} */}
 
         {/* Blog Section */}
         {data?.blogSection?.enabled !== false && (

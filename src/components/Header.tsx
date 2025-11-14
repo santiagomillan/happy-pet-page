@@ -4,13 +4,23 @@ import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
 import { Link, useLocation } from "react-router-dom";
 
-const Header = ({ data: HeaderData }) => {
-  const title = useMemo(
-    () => HeaderData || "Veterinaria Danna B",
-    [HeaderData]
-  );
+interface MenuItem {
+  name?: string;
+  id?: string;
+}
+
+interface HeaderProps {
+  title?: string;
+  menuItems?: MenuItem[];
+}
+
+const Header = ({ title: titleProp, menuItems }: HeaderProps) => {
+  const title = useMemo(() => titleProp || "Veterinaria Danna B", [titleProp]);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+
+  // Debug: Ver qué llega en menuItems
+  console.log("🔍 [Header] menuItems recibidos:", menuItems);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);

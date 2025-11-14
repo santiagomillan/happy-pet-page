@@ -5,6 +5,44 @@ import { type SanityDocument } from "next-sanity";
 // Query única para todos los datos del sitio
 const SITE_QUERY = `*[_type == "siteSettings"][0]{
   title,
+  "menuItems": [
+    select(
+      heroSection.enabled == true => {
+        "name": heroSection.title,
+        "id": "#hero"
+      }
+    ),
+    select(
+      aboutSection.enabled == true => {
+        "name": aboutSection.title,
+        "id": "#about"
+      }
+    ),
+    select(
+      servicesSection.enabled == true => {
+        "name": servicesSection.title,
+        "id": "#services"
+      }
+    ),
+    select(
+      blogSection.enabled == true => {
+        "name": blogSection.title,
+        "id": "#blog"
+      }
+    ),
+    select(
+      agendaSection.enabled == true => {
+        "name": agendaSection.title,
+        "id": "#agenda"
+      }
+    ),
+    select(
+      contactSection.enabled == true => {
+        "name": contactSection.title,
+        "id": "#contact"
+      }
+    )
+  ][defined(@)],
   heroSection{
     enabled,
     title,
@@ -216,7 +254,14 @@ const SECTION_QUERIES = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type SectionData = any;
 
+interface MenuItem {
+  name?: string;
+  id?: string;
+}
+
 interface SiteData extends SanityDocument {
+  title?: string;
+  menuItems?: MenuItem[];
   heroSection?: SectionData;
   aboutSection?: SectionData;
   servicesSection?: SectionData;
